@@ -47,14 +47,14 @@ export default {
 	},
 	methods: {
 		async sendMessage() {
-			// if (this.inputMsg.trim() == '') return;
-			// this.$store.commit('robotMsgMutation', { //提交自己的内容
-			// 	message: this.inputMsg
-			// })
-			// await this.$store.dispatch('robatMsgAction', { //提交由自己输入内容作为参数请求接口异步得来的内容（机器人的回复）
-			// 	message: this.inputMsg
-			// })
-			// this.inputMsg = '';
+			if (this.inputMsg.trim() === '') return;
+			this.$store.commit('robotMsgMutation', { //提交自己的内容
+				message: this.inputMsg
+			})
+			await this.$store.dispatch('robatMsgAction', { //提交由自己输入内容作为参数请求接口异步得来的内容（机器人的回复）
+				message: this.inputMsg
+			})
+			 this.inputMsg = '';
 		},
 		refresh() {
 			setTimeout(() => {
@@ -63,9 +63,10 @@ export default {
 		}
 	},
 	watch: {
-		// robotMsgGetter() { //当数据改变了,则自动刷新
-		// 	this.refresh();
-		// }
+		robotMsgGetter() { //当数据改变了,则自动刷新,使用store的getters可以监听
+		  console.log('12313');
+		 	this.refresh();//改变列表滚动高度，保持最新的消息在最下面
+    }
 	},
 	computed: {
 		...mapGetters([

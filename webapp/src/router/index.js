@@ -9,6 +9,7 @@ import Message from "@/pages/Message";
 import Robot from "@/pages/Robot";
 import ContactList from "@/pages/ContactList";
 import Me from "@/pages/Me";
+import userInfo from "@/pages/UserInfo"
 Vue.use(Router)
 
 export default new Router({
@@ -37,6 +38,9 @@ export default new Router({
     },{ //个人中心
       path: "/me",
       component: Me
-    },
+    },{//个人信息
+      path:'/user_info/:name',
+      component:userInfo
+    }
   ]
 })
