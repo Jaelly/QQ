@@ -100,6 +100,7 @@ export default {
 				});
 				return
 			} else if (this.canEditorInfo) {
+			  //console.log(this.myInfo)
         console.log(2);
 				this.$emit("confirm", {
 					messageBoxEvent: this.messageBoxEvent,
@@ -108,6 +109,7 @@ export default {
 				return
 			}
       console.log('---------------');
+
 			this.$emit("confirm", this.messageBoxEvent);
 		}
 	}

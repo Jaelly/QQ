@@ -16,7 +16,7 @@
 
 			<form>
 				<input type="text" class="fadeIn second" placeholder="用户名" v-model="name">
-				<input type="password" class="fadeIn third" placeholder="密码" v-model="password">
+				<input type="password" class="fadeIn third" placeholder="密码" v-model="password" @keydown.enter.prevent="login">
 				<input type="button" @click="login" class="fadeIn fourth" value="登录">
 			</form>
 		</div>

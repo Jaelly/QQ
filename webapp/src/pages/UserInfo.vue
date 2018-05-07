@@ -6,7 +6,7 @@
 		<p slot="content">{{this.messageBox.message}}</p>
 	</Message-box>
 	<!--编辑用户资料-->
-	<Message-box v-if="this.isMe" :messageBoxEvent="this.messageBox.messageBoxEvent" :visible="this.messageBox.visible" :title="this.messageBox.title" :canEditorInfo="this.messageBox.canEditorInfo" :myInfo="this.myInfo" :hasCancel="this.messageBox.hasCancel"
+	<Message-box v-show="this.isMe" :messageBoxEvent="this.messageBox.messageBoxEvent" :visible="this.messageBox.visible" :title="this.messageBox.title" :canEditorInfo="this.messageBox.canEditorInfo" :myInfo="this.myInfo" :hasCancel="this.messageBox.hasCancel"
 	    @cancel="cancel" @confirm="confirm">
 		<p slot="content">{{this.messageBox.message}}</p>
 	</Message-box>
@@ -59,13 +59,14 @@
 <script>
 import Header from '../components/Header.vue'
 import axios from "axios"
+import qs from 'qs'
 import {
 	mapGetters
 } from 'vuex'
 export default {
 	data() {
 		return {
-			userInfo: {}, //用户信息
+			userInfo: {}, //用户信息显示用的
 			myInfo: {}, //我的信息
 			remark: '', //备注
 			isMyFriend: false, //他是否是我的好友
@@ -99,15 +100,15 @@ export default {
 				this.userInfo = this.myInfo;
 				return
 			}
-			axios.get('/api/v1/user_info', {
-				params: {
-					user_id: this.$route.params.user_id
-				}
-			}).then(res => {
-				this.userInfo = res.data.data.userInfo[0];
-			}).catch(err => {
-				console.log('err1', err)
-			})
+			// axios.get('/api/v1/user_info', {
+			// 	params: {
+			// 		user_id: this.$route.params.user_id
+			// 	}
+			// }).then(res => {
+			// 	this.userInfo = res.data.data.userInfo[0];
+			// }).catch(err => {
+			// 	console.log('err1', err)
+			// })
 		},
 		// 查询此用户是否是我的好友
 		isFriend() {
@@ -187,7 +188,8 @@ export default {
 		},
 		//修改我的信息
 		editorInfo() {
-			this.messageBox.messageBoxEvent = 'editorInfo'
+      //修改弹出框的配置并出现
+			this.messageBox.messageBoxEvent = 'editorInfo';
 			this.messageBox.visible = true;
 			this.messageBox.canEditorInfo = true;
 			this.messageBox.title = '修改我的信息';
@@ -229,7 +231,9 @@ export default {
 			}
 		},
 		//弹窗确定事件
+    //TODO
 		confirm(value) {
+		 console.log(value)
 			//删除好友
 			if (value === 'delFriend') {
 				axios.delete('/api/v1/del_friend', {
@@ -276,18 +280,18 @@ export default {
 				var urlP = /^((https?|ftp|file):\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
 				var re = new RegExp(urlP);
 				console.log('value.myInfo.website', value.myInfo.website)
-				if (value.myInfo.website) {
-					if (!re.test(value.myInfo.website)) {
+				if (value.myInfo.website) {//如果有输入微博账号则验证账号
+					if (!re.test(value.myInfo.website)) {//验证不通过
 						this.$message({
 							message: '请输入正确的网址',
 							type: "error"
 						});
 						return
-					} else {
+					} else {//验证通过，补全网址
 						value.myInfo.website = value.myInfo.website.substr(0, 4) != 'http' ? ('http://' + value.myInfo.website) : value.myInfo.website;
 					}
 				}
-				if (value.myInfo.github) {
+				if (value.myInfo.github) {//如果有输入github账号则验证账号
 					if (!re.test(value.myInfo.github)) {
 						this.$message({
 							message: '请输入正确的网址',
@@ -298,27 +302,29 @@ export default {
 						value.myInfo.github = value.myInfo.github.substr(0, 4) != 'http' ? ('http://' + value.myInfo.github) : value.myInfo.github;
 					}
 				}
-				console.log(value.myInfo)
-				axios.put('/api/v1/editor_info', {
+				//console.log(value.myInfo);//修改后的信息，没有判断是否修改过，点确认就提交
+				//调用修改信息接口
+				axios.post('/editor_info', qs.stringify({
 					github: value.myInfo.github,
 					website: value.myInfo.website,
 					sex: value.myInfo.sex,
 					place: value.myInfo.place
-				}).then((res) => {
+				})).then((res) => {//修改成功，更改本地存储，关闭弹框
 					localStorage.setItem("userInfo", JSON.stringify(value.myInfo));
 					this.messageBox.visible = false;
 				})
 			}
 		}
 	},
-	async created() {
-		this.myInfo = JSON.parse(localStorage.getItem("userInfo"));
-		this.isMe = this.myInfo.user_id == this.$route.params.user_id ? true : false;
-		await this.$store.dispatch('newFriendAction', this.myInfo.user_id)
-		await this.isAddingMeFun();
-		await this.isFriend();
-		this.getInfo();
-	}
+  created: async function () {//vue实例被生成后
+    this.myInfo = JSON.parse(localStorage.getItem("userInfo"));//登陆时存的用户信息
+    this.isMe = this.myInfo.user_id == this.$route.params.user_id ? true : false;//判断是不是自己
+    //TODO  搜索人也是这个页面（下面两个方法是搜索的时候用的）
+    //await this.$store.dispatch('newFriendAction', this.myInfo.user_id);
+   // await this.isAddingMeFun();//查询这个人是否请求我未添加
+    //await this.isFriend();//查询是否是好友
+    this.getInfo();
+  }
 }
 </script>
 

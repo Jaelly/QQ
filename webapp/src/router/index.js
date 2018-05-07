@@ -39,7 +39,7 @@ export default new Router({
       path: "/me",
       component: Me
     },{//个人信息
-      path:'/user_info/:name',
+      path:'/user_info/:user_id',
       component:userInfo
     }
   ]

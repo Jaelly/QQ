@@ -37,6 +37,7 @@ const store = new Vuex.Store({
         increment (context) {
           context.commit('increment')
         },
+        //调用机器人接口并提交回复信息
         robatMsgAction({commit},data){
           axios.get('/robot',{params:data})
             .then(res=>{
@@ -65,6 +66,9 @@ const store = new Vuex.Store({
                 }
               }
             })
+        },
+        newFriendAction({commit},data){
+
         }
       }
 })

@@ -23,12 +23,20 @@ let getUserInfo = (user_id) => {
     const _sql =
         'SELECT id AS user_id, name ,sex ,avator,place ,website,github,intro,status,last_login  FROM user_info   WHERE  user_info.id =? '
     return query(_sql, [user_id]);
+};
+
+//修改我的信息
+let editorInfo = function(data) {
+    let _sql = ' UPDATE  user_info SET github = ?,website = ?,sex = ?,place = ? WHERE id = ? ; '
+    return query(_sql, data)
 }
+
 
 
 module.exports = {
     insertData,
     findDataByName,
     findUIByName,
-    getUserInfo
+    getUserInfo,
+    editorInfo
 }
